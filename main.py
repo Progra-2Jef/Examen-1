@@ -1,19 +1,15 @@
-def get_player_name():
-    """Prompts the user to enter their name for the game.
+from juego import Buscaminas
+from ranking import Ranking
 
-    Returns:
-        str: The name of the player."""
+
+def get_player_name():
     print("=== BUSCA MINAS ===")
     name = input("Jugador: ")
     return name
 
 
 def get_difficulty_level():
-    """Displays a menu for the user to select the game difficulty.
-    Validates the input and returns the corresponding board size and mine count.
 
-    Returns:
-        tuple: (board_size, total_mines)"""
     while True:
         print("\n=== SELECCIONE DIFICULTAD ===")
         print("1- Principiantes (08x08 celdas, 12 minas)")
@@ -29,24 +25,56 @@ def get_difficulty_level():
         elif choice == '3':
             return (12, 30)
         else:
-            print("Elección inválida. Por favor seleccione 1, 2 o 3.")
+            print("Elección inválida.")
 
-from juego import Buscaminas
-#gemini is used to correct errorrs.
 
 def main():
-    """Main execution function. Captures initial data to start the game."""
-    # 1. Capture player name
+
+    ranking = Ranking()
+
     player_name = get_player_name()
-    print(f"\n¡Bienvenido, {player_name}! Empecemos a jugar.")
-
-    # 2. Capture difficulty level (dimensions and mines)
     board_size, total_mines = get_difficulty_level()
-    print(f"\nIniciando juego con un tablero de {board_size}x{board_size} y {total_mines} minas.")
-    #gemini was used to help with the code.
 
-    juego = Buscaminas(player_name,board_size, total_mines)
+    juego = Buscaminas(player_name, board_size, total_mines)
+
+    estado = "seguir"
+
+    while estado == "seguir":
+
+        juego.mostrar()
+
+        print("\nMovimientos:")
+        print("W = Arriba")
+        print("S = Abajo")
+        print("A = Izquierda")
+        print("D = Derecha")
+
+        tecla = input("Movimiento: ").lower()
+
+        if tecla == "w":
+            estado = juego.mover(-1, 0)
+        elif tecla == "s":
+            estado = juego.mover(1, 0)
+        elif tecla == "a":
+            estado = juego.mover(0, -1)
+        elif tecla == "d":
+            estado = juego.mover(0, 1)
+        else:
+            print("Movimiento inválido")
+
+    juego.mostrar()
+
+    if estado == "mina":
+        print("\nPerdiste el juego.")
+    elif estado == "fin":
+        print("\n¡Ganaste!")
+
+    prom = juego.promedio()
+    print("Promedio final:", prom)
+
+    ranking.agregar(player_name, prom, board_size)
+    ranking.mostrar()
 
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     main()
